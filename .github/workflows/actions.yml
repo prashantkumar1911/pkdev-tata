@@ -63,7 +63,7 @@ jobs:
     steps:
       - name: Pull New Image
         run: |
-          docker pull prashantkumar1911/pkdev-tata:${{ github.sha }}
+          docker pull ${{ secrets.DOCKERHUB_USERNAME }}/pkdev-tata:${{ github.sha }}
 
       - name: Restart Container
         run: |
@@ -72,7 +72,7 @@ jobs:
             --name pkdev-tata \
             --restart unless-stopped \
             -p 8080:8080 \
-            prashantkumar1911/pkdev-tata:${{ github.sha }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/pkdev-tata:${{ github.sha }}
 
       - name: Verify Container
         run: |
@@ -80,5 +80,14 @@ jobs:
 
       - name: Verify Application
         run: |
-          sleep 10
+          sleep 20
           curl --fail http://localhost:8080
+
+      - name: Remove Unused Images
+        run: |
+          docker image prune -af
+
+      - name: Show Container Logs
+        if: failure()
+        run: |
+          docker logs pkdev-tata
