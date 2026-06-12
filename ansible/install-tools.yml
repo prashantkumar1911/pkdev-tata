@@ -1,0 +1,30 @@
+---
+- name: Install Base Tools
+
+  hosts: all
+  become: true
+  tasks:
+
+    - name: Update apt cache
+      apt:
+        update_cache: yes
+
+    - name: Install required packages
+      apt:
+        name:
+          - docker.io
+          - git
+          - curl
+          - python3-pip
+          - python3-docker
+          - unzip
+          - htop
+          - net-tools
+          - jq
+        state: present
+
+    - name: Enable Docker Service
+      service:
+        name: docker
+        state: started
+        enabled: true
