@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
 
       - name: Checkout Code
@@ -18,7 +18,7 @@ jobs:
         uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
-          java-version: '25'
+          java-version: '21'
 
       - name: Make maven wrapper executable
         run: chmod +x mvnw
@@ -50,3 +50,30 @@ jobs:
       - name: Push Docker Image to DockerHub
         run: |
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/pkdev-tata:latest
+          
+
+  deploy:
+    needs: build
+    runs-on: self-hosted
+
+    steps:
+      - name: Pull New Image
+        run: |
+          docker pull prashantkumar1911/pkdev-tata:latest
+
+      - name: Restart Container
+        run: |
+          docker rm -f pkdev-tata || true          
+          docker run -d \
+            --name pkdev-tata \
+            -p 8080:8080 \
+            prashantkumar1911/pkdev-tata:latest
+
+      - name: Verify Container
+        run: |
+          docker ps
+
+      - name: Verify Container
+        run: |
+          sleep 10
+          curl http://localhost:8080
