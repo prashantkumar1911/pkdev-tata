@@ -1,6 +1,4 @@
 all:
   hosts:
-    webservers:
-      ansible_host : 100.26.205.130
-      ansible_user : ubuntu
-      ansible_ssh_private_key_file : "~/.ssh/pkdev-tata-key"
+    localhost:
+      ansible_connection: local
